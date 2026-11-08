@@ -1,11 +1,14 @@
 package com.onlinebanking.bankonboardingservice.service;
 
+import com.onlinebanking.bankonboardingservice.exception.ResourceNotFoundException;
 import com.onlinebanking.bankonboardingservice.model.Document;
 import com.onlinebanking.bankonboardingservice.repository.DocumentRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 import java.time.Duration;
@@ -74,8 +77,24 @@ public class S3FileService {
 
     public void confirmDocumentUpload(String fileName){
         Document document = documentRepository.findByFileName(fileName)
-                .orElseThrow (() -> new RuntimeException("Document record not found for file: " + fileName));
+                .orElseThrow (() -> new ResourceNotFoundException("Document record not found with file name: " + fileName));
         document.setStatus("COMPLETED");
         documentRepository.save(document);
+    }
+
+
+    public String generateDownloadPresignedUrl(String fileName){
+        Document document = documentRepository.findByFileName(fileName)
+                .orElseThrow(() -> new ResourceNotFoundException("Document not found: " + fileName));
+
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .build();
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(15))
+                .getObjectRequest(getObjectRequest)
+                .build();
+        return s3Presigner.presignGetObject(presignRequest).url().toString();
     }
 }
