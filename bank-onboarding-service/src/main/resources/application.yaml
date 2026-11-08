@@ -9,3 +9,10 @@ aws:
     region: "us-east-1"
     access-key: "admin"
     secret-key: "password123"
+
+# KYC/KYB Document Validation Rules
+
+document:
+  upload:
+    max-file-size: 5242880 # 5 MB in bytes (5 * 1024 * 1024)
+    allowed-types: "application/pdf, image/jpg, image/png"

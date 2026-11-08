@@ -31,9 +31,11 @@ public class UploadController {
     }
 
     @PostMapping("/signed-url")
-    public ResponseEntity getSignedUrl(@RequestBody DocumentRequest request){
-        String signedUrl = s3FileService.generatePreSignedUrl(request.fileName(), request.contentType());
+    public ResponseEntity<?> getSignedUrl(@RequestBody DocumentRequest request){
 
-        return ResponseEntity.ok(Map.of("uploadUrl", signedUrl));
+        String signedUrl = s3FileService.generatePreSignedUrlAndSaveMetadata(request.fileName(), request.contentType(), request.fileSize());
+
+        return ResponseEntity.ok(Map.of("message", "Pre-signed URL generated successfully and record saved.",
+                "uploadUrl", signedUrl));
     }
 }
