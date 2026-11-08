@@ -38,4 +38,15 @@ public class UploadController {
         return ResponseEntity.ok(Map.of("message", "Pre-signed URL generated successfully and record saved.",
                 "uploadUrl", signedUrl));
     }
+
+    @PostMapping("/confirm/{fileName}")
+    public ResponseEntity<?> confirmUpload(@PathVariable String fileName){
+        s3FileService.confirmDocumentUpload(fileName);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Document upload confirmed successfully",
+                "fileName", fileName,
+                "status", "COMPLETED"
+        ));
+    }
 }

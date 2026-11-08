@@ -71,4 +71,11 @@ public class S3FileService {
                 .build();
         return s3Presigner.presignPutObject(presignRequest).url().toString();
     }
+
+    public void confirmDocumentUpload(String fileName){
+        Document document = documentRepository.findByFileName(fileName)
+                .orElseThrow (() -> new RuntimeException("Document record not found for file: " + fileName));
+        document.setStatus("COMPLETED");
+        documentRepository.save(document);
+    }
 }
