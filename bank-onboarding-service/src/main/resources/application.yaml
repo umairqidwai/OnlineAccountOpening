@@ -16,3 +16,6 @@ document:
   upload:
     max-file-size: 5242880 # 5 MB in bytes (5 * 1024 * 1024)
     allowed-types: "application/pdf, image/jpg, image/png"
+
+front-end:
+  url: http://localhost:5176
